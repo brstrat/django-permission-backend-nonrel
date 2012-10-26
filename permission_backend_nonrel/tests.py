@@ -1,5 +1,9 @@
 from django.contrib.auth import authenticate
-from django.contrib.auth.models import User, Group, Permission, AnonymousUser
+
+#from django.contrib.auth.models import User
+from app.models.common.user import User
+
+from django.contrib.auth.models import Group, Permission, AnonymousUser
 from django.contrib.contenttypes.models import ContentType
 from django.test import TestCase
 

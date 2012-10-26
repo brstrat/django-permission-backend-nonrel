@@ -1,8 +1,9 @@
 from django.contrib.auth.backends import ModelBackend
-from django.contrib.auth.models import User
+#from django.contrib.auth.models import User
 
 from models import UserPermissionList, GroupPermissionList
 
+from app.util.common.auth import admin_auth
 
 class NonrelPermissionBackend(ModelBackend):
     """
@@ -58,7 +59,9 @@ class NonrelPermissionBackend(ModelBackend):
         return False
 
     def get_user(self, user_id):
+        from app.models.common.user import User
+
         try:
-            return User.objects.get(pk=user_id)
+            return User.objects_for(admin_auth).get(user_id)
         except User.DoesNotExist:
             return None
