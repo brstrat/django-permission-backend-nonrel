@@ -11,7 +11,7 @@ class NonrelPermissionBackend(ModelBackend):
     """
     supports_object_permissions = False
     supports_anonymous_user = True
-    
+
     def get_group_permissions(self, user_obj, user_perm_obj=None):
         """
         Returns a set of permission strings that this user has through his/her
@@ -21,15 +21,15 @@ class NonrelPermissionBackend(ModelBackend):
             perms = set([])
             if user_perm_obj is None:
                 user_perm_obj, created = UserPermissionList.objects.get_or_create(user=user_obj)
-            
+
             group_perm_lists = GroupPermissionList.objects.filter(group__id__in=user_perm_obj.group_fk_list)
-            
+
             for group_perm_list in group_perm_lists:
                 perms.update(group_perm_list.permission_list)
-                
+
             user_obj._group_perm_cache = perms
         return user_obj._group_perm_cache
-    
+
     def get_all_permissions(self, user_obj):
         if user_obj.is_anonymous():
             return set()
@@ -37,11 +37,11 @@ class NonrelPermissionBackend(ModelBackend):
             try:
                 pl = UserPermissionList.objects.get(user=user_obj)
                 user_obj._perm_cache = set(pl.permission_list)
-                
+
             except UserPermissionList.DoesNotExist:
                 pl = None
                 user_obj._perm_cache = set()
-                
+
             user_obj._perm_cache.update(self.get_group_permissions(user_obj,
                                                                    pl))
         return user_obj._perm_cache
