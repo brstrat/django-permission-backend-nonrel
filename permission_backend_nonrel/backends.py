@@ -3,7 +3,12 @@ from django.contrib.auth.backends import ModelBackend
 
 from models import UserPermissionList, GroupPermissionList
 
-from app.util.common.auth import admin_auth
+try:
+    from app.util.common.auth import admin_auth
+    sudo = None
+except ImportError:
+    from app.util.common.auth import sudo
+    admin_auth = None
 
 class NonrelPermissionBackend(ModelBackend):
     """
@@ -62,6 +67,11 @@ class NonrelPermissionBackend(ModelBackend):
         from app.models.common.user import User
 
         try:
-            return User.objects_for(admin_auth).get(user_id)
+            if admin_auth:
+                return User.objects_for(admin_auth).get(user_id)
+            else:
+                with sudo():
+                    return User.objects.get(user_id)
+
         except User.DoesNotExist:
             return None
